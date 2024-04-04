@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 import "./App.css";
-import PrayerTime from "./components/PrayerTiming";
+import PrayerTime from "./components/Tvprayerpage/PrayerTiming";
 
 function App() {
   return (
