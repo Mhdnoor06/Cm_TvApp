@@ -189,14 +189,19 @@ const PrayerTime: React.FC = () => {
       <header>
         <div className="header">
           <img src={cmlogo} alt="" />
-          <h1>Test Masjid</h1>
+          <h1 className="text-3xl  font-bold">Test Masjid</h1>
         </div>
       </header>
-      <section className="clock container">
-        <div className="clock__container grid">
+      <section className="clock mid-container">
+        <div className="clock__container flex-container">
           <div className="appscanner">
-            <img src={OR} alt="" />
-            <h1>Scan to Download</h1>
+            <img src={OR} alt="" className="qr-scanner" />
+            <h1
+              className="text-2xl md:text-1xl  font-bold text-center scantext"
+              style={{ fontSize: "1.8vw" }}
+            >
+              Scan to Download
+            </h1>
           </div>
           <div className="clock_ishraq">
             <Clock namazData={prayerTimes} />
@@ -204,7 +209,7 @@ const PrayerTime: React.FC = () => {
               <div className="ishraq-icon">
                 <img src={ishraqicon} alt="Fajr" />
               </div>
-              <h1>
+              <h1 className="text-2xl  font-bold">
                 Ishraq :{" "}
                 {ishraqTime !== undefined
                   ? convertEpochToTimeString(ishraqTime, lat, lon)

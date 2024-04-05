@@ -136,7 +136,7 @@ const Clock: React.FC<NamazComponentProps> = ({ namazData }) => {
 
   return (
     <div>
-      <div className="clock__content grid">
+      <div className="clock__content flex-container">
         <div className="clock__circle">
           <div className="clock__rounder"></div>
           <div
