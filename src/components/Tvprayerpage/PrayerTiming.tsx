@@ -30,8 +30,10 @@ import {
 
 interface PrayerTime {
   namazName: string;
+  type: number;
   azaanTime: number;
   jamaatTime: number;
+  _id: string;
 }
 
 const PrayerTime: React.FC = () => {
@@ -181,6 +183,7 @@ const PrayerTime: React.FC = () => {
     fetchHijriDate();
   }, []);
 
+  console.log(prayerTimes);
   return (
     <div className="App">
       <header>
@@ -196,7 +199,7 @@ const PrayerTime: React.FC = () => {
             <h1>Scan to Download</h1>
           </div>
           <div className="clock_ishraq">
-            <Clock />
+            <Clock namazData={prayerTimes} />
             <div className="israq">
               <div className="ishraq-icon">
                 <img src={ishraqicon} alt="Fajr" />
@@ -236,7 +239,7 @@ const PrayerTime: React.FC = () => {
         <table className="prayer-times">
           <thead>
             <tr>
-              <th colSpan="6">{hijiriDate}</th>
+              <th colSpan={6}>{hijiriDate}</th>
             </tr>
           </thead>
 

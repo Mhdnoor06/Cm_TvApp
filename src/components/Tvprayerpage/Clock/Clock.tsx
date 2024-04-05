@@ -1,8 +1,21 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import hrhandle from "../../../assets/photos/hrhandle.png";
 import minhandle from "../../../assets/photos/minhandle.png";
+// import moment from "moment-timezone";
 
-const Clock = () => {
+interface NamazData {
+  namazName: string;
+  type: number;
+  azaanTime: number;
+  jamaatTime: number;
+  _id: string;
+}
+
+interface NamazComponentProps {
+  namazData: NamazData[];
+}
+
+const Clock: React.FC<NamazComponentProps> = ({ namazData }) => {
   const [time, setTime] = useState({
     hoursAngle: 0,
     minutesAngle: 0,
@@ -11,6 +24,13 @@ const Clock = () => {
     minutesText: "",
     ampm: "",
   });
+
+  const [currentPrayer, setCurrentPrayer] = useState({
+    namazName: "",
+    timeRemaining: "",
+  });
+
+  // console.log(currentPrayer);
 
   useEffect(() => {
     const clockInterval = setInterval(() => {
@@ -40,6 +60,79 @@ const Clock = () => {
 
     return () => clearInterval(clockInterval);
   }, []);
+
+  // console.log(currentPrayer);
+
+  const updatePrayerTimers = useCallback((currentTime, namazData) => {
+    const getMidpoint = (time1, time2) => (time1 + time2) / 2;
+
+    const formatTime = (totalSeconds) => {
+      const seconds = Math.abs(totalSeconds) % 60;
+      const minutes = Math.floor(Math.abs(totalSeconds) / 60) % 60;
+      const hours = Math.floor(Math.abs(totalSeconds) / 3600);
+      const sign = totalSeconds < 0 ? "-" : "+";
+      return `${sign}${String(hours).padStart(2, "0")}:${String(
+        minutes
+      ).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+    };
+
+    // Sort prayers by time
+    const sortedPrayers = namazData
+      .slice()
+      .sort((a, b) => a.azaanTime - b.azaanTime);
+
+    // console.log(sortedPrayers);
+
+    let current = null;
+    let next = null;
+
+    for (let i = 0; i < sortedPrayers.length; i++) {
+      if (currentTime < sortedPrayers[i].azaanTime) {
+        next = sortedPrayers[i];
+
+        // console.log(currentTime);
+        current =
+          sortedPrayers[i - 1] || sortedPrayers[sortedPrayers.length - 1];
+        break;
+      }
+    }
+
+    // If 'next' is still null, we're after the last prayer, so set to first prayer of next day
+    if (!next) {
+      current = sortedPrayers[sortedPrayers.length - 1];
+      next = {
+        ...sortedPrayers[0],
+        azaanTime: sortedPrayers[0].azaanTime + 24 * 3600,
+      };
+    }
+
+    const midpoint = getMidpoint(current.azaanTime, next.azaanTime);
+
+    let name, timeRemaining;
+    if (currentTime < current.azaanTime || currentTime >= midpoint) {
+      // Before current prayer's Azaan or after midpoint, we count down to the next prayer
+      name = next.namazName;
+      timeRemaining = formatTime(currentTime - next.azaanTime);
+    } else {
+      // After current prayer's Azaan and before midpoint, count up from current prayer
+      name = current.namazName;
+      timeRemaining = formatTime(current.azaanTime - currentTime);
+    }
+
+    setCurrentPrayer({ namazName: name, timeRemaining: timeRemaining });
+  }, []);
+
+  useEffect(() => {
+    if (namazData && namazData.length > 0) {
+      const interval = setInterval(() => {
+        const currentTime = Math.floor(Date.now() / 1000);
+
+        updatePrayerTimers(currentTime, namazData);
+      }, 1000);
+
+      return () => clearInterval(interval);
+    }
+  }, [namazData, updatePrayerTimers]);
 
   return (
     <div>
