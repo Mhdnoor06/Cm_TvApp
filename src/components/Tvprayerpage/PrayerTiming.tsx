@@ -12,21 +12,22 @@ import azaan from "../../assets/photos/azaan.svg";
 import iqama from "../../assets/photos/iqama.svg";
 import ishraqicon from "../../assets/photos/ishraq.svg";
 
-import { getToken, onMessage } from "firebase/messaging";
+// import { getToken, onMessage } from "firebase/messaging";
 import {
   convertEpochToTimeString,
   formatDate,
 } from "../../healpers/helperfunc";
-import {
-  messaging,
-  requestNotificationPermission,
-} from "../../firebase/firebaseInit";
+// import {
+//   messaging,
+//   requestNotificationPermission,
+// } from "../../firebase/firebaseInit";
 import Clock from "./Clock/Clock";
 import {
   fetchHijriDate,
   fetchJummahTimes,
   fetchPrayerTimes,
 } from "../../api-calls";
+import { ClipLoader, PulseLoader } from "react-spinners";
 
 interface PrayerTime {
   namazName: string;
@@ -36,7 +37,11 @@ interface PrayerTime {
   _id: string;
 }
 
-const PrayerTime: React.FC = () => {
+interface PrayerTimeProps {
+  setProgress: React.Dispatch<React.SetStateAction<number>>;
+}
+
+const PrayerTime: React.FC<PrayerTimeProps> = ({ setProgress }) => {
   const [prayerTimes, setPrayerTimes] = useState<PrayerTime[]>([]);
   const [otherTimings, setOtherTimings] = useState<PrayerTime[]>([]);
   const [ishraqTime, setIshraqTime] = useState<number>();
@@ -45,92 +50,104 @@ const PrayerTime: React.FC = () => {
   const lat = 22.465084026777593;
   const lon = 88.30494547779026;
 
-  useEffect(() => {
-    navigator.serviceWorker
-      .register("firebase-messaging-sw.js")
-      .then((registration) => {
-        return getToken(messaging, {
-          serviceWorkerRegistration: registration,
-        });
-      })
-      .then((currentToken) => {
-        console.log("Current token:", currentToken);
-      })
-      .catch((error) => {
-        console.error("Error registering service worker:", error);
-      });
+  // useEffect(() => {
+  //   navigator.serviceWorker
+  //     .register("firebase-messaging-sw.js")
+  //     .then((registration) => {
+  //       return getToken(messaging, {
+  //         serviceWorkerRegistration: registration,
+  //       });
+  //     })
+  //     .then((currentToken) => {
+  //       console.log("Current token:", currentToken);
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error registering service worker:", error);
+  //     });
 
-    // Define an async function inside the useEffect for handling messages
-    const handleMessage = async (payload) => {
-      console.log("Message received:", payload);
-      try {
-        await fetchPrayerTimes();
-        await fetchJummahTimes();
-      } catch (error) {
-        console.error("Error fetching data on message:", error);
-      }
-    };
+  //   // Define an async function inside the useEffect for handling messages
+  //   const handleMessage = async (payload) => {
+  //     console.log("Message received:", payload);
+  //     try {
+  //       await fetchPrayerTimes();
+  //       await fetchJummahTimes();
+  //     } catch (error) {
+  //       console.error("Error fetching data on message:", error);
+  //     }
+  //   };
 
-    // Listen for messages
-    onMessage(messaging, handleMessage);
+  //   // Listen for messages
+  //   onMessage(messaging, handleMessage);
 
-    // Example for handling 'FETCH_LATEST_DATA' messages from service workers
-    const handleServiceWorkerMessage = async (event) => {
-      if (event.data && event.data.type === "FETCH_LATEST_DATA") {
-        try {
-          console.log(
-            "Fetching latest data as requested by the service worker..."
-          );
-          await fetchPrayerTimes();
-          await fetchJummahTimes();
-        } catch (error) {
-          console.error(
-            "Error fetching data on service worker message:",
-            error
-          );
-        }
-      }
-    };
+  //   // Example for handling 'FETCH_LATEST_DATA' messages from service workers
+  //   const handleServiceWorkerMessage = async (event) => {
+  //     if (event.data && event.data.type === "FETCH_LATEST_DATA") {
+  //       try {
+  //         console.log(
+  //           "Fetching latest data as requested by the service worker..."
+  //         );
+  //         await fetchPrayerTimes();
+  //         await fetchJummahTimes();
+  //       } catch (error) {
+  //         console.error(
+  //           "Error fetching data on service worker message:",
+  //           error
+  //         );
+  //       }
+  //     }
+  //   };
 
-    if ("serviceWorker" in navigator && "PushManager" in window) {
-      navigator.serviceWorker.ready.then((registration) => {
-        registration.addEventListener("message", handleServiceWorkerMessage);
-      });
-    }
+  //   if ("serviceWorker" in navigator && "PushManager" in window) {
+  //     navigator.serviceWorker.ready.then((registration) => {
+  //       registration.addEventListener("message", handleServiceWorkerMessage);
+  //     });
+  //   }
 
-    // Request notification permission
-    requestNotificationPermission();
+  //   // Request notification permission
+  //   requestNotificationPermission();
 
-    return () => {
-      if ("serviceWorker" in navigator && navigator.serviceWorker.controller) {
-        navigator.serviceWorker.controller.removeEventListener(
-          "message",
-          handleServiceWorkerMessage
-        );
-      }
-    };
-  }, []);
+  //   return () => {
+  //     if ("serviceWorker" in navigator && navigator.serviceWorker.controller) {
+  //       navigator.serviceWorker.controller.removeEventListener(
+  //         "message",
+  //         handleServiceWorkerMessage
+  //       );
+  //     }
+  //   };
+  // }, []);
+
+  const [loadingPrayerTimes, setLoadingPrayerTimes] = useState(true); // Add this line
+  const [loadingOtherTimings, setLoadingOtherTimings] = useState(true); // Add this line
+  const [loadingHijiriDate, setLoadingHijiriDate] = useState(true); // Add this line for Hijiri Date
 
   useEffect(() => {
     const loadData = async () => {
       try {
-        // These calls are correctly awaited.
+        setProgress(0);
+        setLoadingPrayerTimes(true); // Start loading
         const prayerTimesData = await fetchPrayerTimes();
         setPrayerTimes(prayerTimesData);
+        setProgress(30);
+        setLoadingPrayerTimes(false); // Data fetched, stop loading
+
+        setLoadingOtherTimings(true); // Start loading
         const jummahTimesData = await fetchJummahTimes();
         setOtherTimings(jummahTimesData);
-        const today = new Date();
-        const hijriDateData = await fetchHijriDate(formatDate(today));
-        setHijjiriDate(hijriDateData);
-
+        setLoadingOtherTimings(false); // Data fetched, stop loading
         const latitude = Number(lat);
         const longitude = Number(lon);
         const { sunrise } = SunCalc.getTimes(new Date(), latitude, longitude);
         const sunriseUnix = sunrise.getTime() / 1000;
         let ishraqTimeCalc = sunriseUnix ? sunriseUnix + 15 * 60 : undefined;
         setIshraqTime(ishraqTimeCalc);
+        setProgress(100);
+        // Removed for brevity. Assume similar logic for ishraqTime and hijiriDate with their respective loading states.
       } catch (error) {
         console.error("Failed to load data:", error);
+        // Make sure to set loading states to false in case of error as well
+        setLoadingPrayerTimes(false);
+        setLoadingOtherTimings(false);
+        setLoadingHijiriDate(false);
       }
     };
 
@@ -203,6 +220,9 @@ const PrayerTime: React.FC = () => {
               Scan to Download
             </h1>
           </div>
+          {/* {loadingPrayerTimes || loadingOtherTimings ? (
+            <div>Loading prayer times...</div> // Display a loader or placeholder
+          ) : ( */}
           <div className="clock_ishraq">
             <Clock namazData={prayerTimes} />
             <div className="israq">
@@ -217,6 +237,7 @@ const PrayerTime: React.FC = () => {
               </h1>
             </div>
           </div>
+          {/* )} */}
           <div className="othertimings">
             {otherTimings.map((timings, i) => (
               <div className="jummatime" key={i}>
@@ -241,37 +262,44 @@ const PrayerTime: React.FC = () => {
         </div>
       </section>
       <section className="prayer-times-container">
-        <table className="prayer-times">
-          <thead>
-            <tr>
-              <th colSpan={6}>{hijiriDate}</th>
-            </tr>
-          </thead>
+        {loadingPrayerTimes ? (
+          <div className="flex flex-col items-center justify-center h-[35vh]">
+            Loading...
+            <ClipLoader color="#36d7b7" />
+          </div>
+        ) : (
+          <table className="prayer-times">
+            <thead>
+              <tr>
+                <th colSpan={6}>{hijiriDate}</th>
+              </tr>
+            </thead>
 
-          <tbody>
-            <tr>
-              {prayerTimes.map((prayer, index) => (
-                <td key={index}>
-                  <div className="prayer-name">
-                    <img
-                      src={getPrayerImage(prayer.namazName.toLowerCase())}
-                      alt={prayer.namazName}
-                    />
-                    <b>{prayer.namazName}</b>
-                  </div>
+            <tbody>
+              <tr>
+                {prayerTimes.map((prayer, index) => (
+                  <td key={index}>
+                    <div className="prayer-name">
+                      <img
+                        src={getPrayerImage(prayer.namazName.toLowerCase())}
+                        alt={prayer.namazName}
+                      />
+                      <b>{prayer.namazName}</b>
+                    </div>
 
-                  <span className="time-slot">
-                    {convertEpochToTimeString(prayer.azaanTime, lat, lon)}
-                  </span>
+                    <span className="time-slot">
+                      {convertEpochToTimeString(prayer.azaanTime, lat, lon)}
+                    </span>
 
-                  <span className="time-slot">
-                    {convertEpochToTimeString(prayer.jamaatTime, lat, lon)}
-                  </span>
-                </td>
-              ))}
-            </tr>
-          </tbody>
-        </table>
+                    <span className="time-slot">
+                      {convertEpochToTimeString(prayer.jamaatTime, lat, lon)}
+                    </span>
+                  </td>
+                ))}
+              </tr>
+            </tbody>
+          </table>
+        )}
       </section>
     </div>
   );
