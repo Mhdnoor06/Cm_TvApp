@@ -124,11 +124,10 @@ const PrayerTime: React.FC<PrayerTimeProps> = ({ setProgress }) => {
     const loadData = async () => {
       try {
         setProgress(0);
-        setProgress(30);
         setLoadingPrayerTimes(true); // Start loading
         const prayerTimesData = await fetchPrayerTimes();
         setPrayerTimes(prayerTimesData);
-        setProgress(70);
+        setProgress(30);
         setLoadingPrayerTimes(false); // Data fetched, stop loading
 
         setLoadingOtherTimings(true); // Start loading
