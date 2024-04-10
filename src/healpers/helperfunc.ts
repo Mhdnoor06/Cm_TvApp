@@ -17,9 +17,23 @@ export const convertEpochToTimeString = (
   if (epoch <= 0) {
     return "--";
   }
+
   const timeZone = tz_lookup(lat, lon);
 
   const date = new Date(epoch * 1000);
   const zonedDate = utcToZonedTime(date, timeZone);
   return format(zonedDate, "hh:mm a", { timeZone });
+};
+
+export const formatDateToReadableString = (
+  dateString: string,
+  lat: number,
+  lon: number
+): string => {
+  const date = new Date(dateString);
+  const timeZone = tz_lookup(lat, lon);
+
+  const zonedDate = utcToZonedTime(date, timeZone);
+
+  return format(zonedDate, "d MMMM yyyy");
 };
