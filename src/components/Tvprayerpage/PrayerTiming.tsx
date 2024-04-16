@@ -195,7 +195,7 @@ const PrayerTime: React.FC = () => {
       <section className="clock mid-container">
         <div className="clock__container flex-container">
           <div className="appscanner">
-            <img src={OR} alt="" className="qr-scanner mb-5" />
+            <img src={OR} alt="" className="qr-scanner min-h-[650px]:mb-5" />
             <h1
               className="text-2xl md:text-1xl  font-bold text-center scantext"
               style={{ fontSize: "1.8vw" }}
@@ -207,7 +207,7 @@ const PrayerTime: React.FC = () => {
             <Clock namazData={prayerTimes} />
             <div className="israq">
               <div className="ishraq-icon">
-                <img src={ishraqicon} alt="Fajr" />
+                <img src={ishraqicon} alt="Fajr" className="h-8" />
               </div>
               <h1 className="text-2xl  font-bold">
                 Ishraq :{" "}
@@ -261,6 +261,7 @@ const PrayerTime: React.FC = () => {
                     <img
                       src={getPrayerImage(prayer.namazName.toLowerCase())}
                       alt={prayer.namazName}
+                      className="h-8"
                     />
                     <b>{prayer.namazName}</b>
                   </div>
