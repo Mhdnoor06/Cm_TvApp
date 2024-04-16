@@ -36,7 +36,7 @@ header {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px;
+  padding: 5px 20px;
 }
 
 .header h1 {
@@ -106,7 +106,7 @@ header {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 20px;
+  gap: 10px;
 }
 
 .israq {
@@ -174,12 +174,12 @@ header {
 .prayer-times th {
   /* font-size: 1.5em; */
   color: #555;
-  padding: 30px;
+  padding: 20px;
 }
 .prayer-times .time-slot {
   font-weight: 500;
   color: #154f30;
-  /* font-size: 1.5em; */
+  font-size: 1rem;
   margin: 0 10px;
 }
 .prayer-times img {
@@ -194,7 +194,7 @@ header {
   margin-bottom: 5px;
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 8px;
   justify-content: center;
 }
 
@@ -246,7 +246,7 @@ body.dark-theme {
 }
 
 body {
-  height: 100vh;
+  /* height: 100vh; */
   margin: 0;
   font-family: var(--body-font);
   background-color: var(--body-color);
@@ -452,5 +452,17 @@ a {
   .clock__circle {
     width: 250px;
     height: 250px;
+  }
+
+  .header {
+    padding: 20px;
+  }
+
+  .clock_ishraq {
+    gap: 20px;
+  }
+
+  .prayer-times .time-slot {
+    font-size: 1.5rem;
   }
 }

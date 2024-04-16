@@ -115,7 +115,7 @@ const PrayerTime: React.FC<PrayerTimeProps> = ({ data, setProgress }) => {
   }, []);
 
   return (
-    <div className="App w-screen h-screen">
+    <div className="App w-screen h-screen overflow-hidden">
       <header>
         <div className="header">
           <img src={cmlogo} alt="" />
@@ -125,7 +125,7 @@ const PrayerTime: React.FC<PrayerTimeProps> = ({ data, setProgress }) => {
       <section className="clock mid-container">
         <div className="clock__container flex-container">
           <div className="appscanner">
-            <img src={OR} alt="" className="qr-scanner mb-5" />
+            <img src={OR} alt="" className="qr-scannermin-h-[650px]:mb-5" />
             <h1
               className="text-2xl md:text-1xl  font-bold text-center scantext"
               style={{ fontSize: "1.8vw" }}
@@ -133,7 +133,7 @@ const PrayerTime: React.FC<PrayerTimeProps> = ({ data, setProgress }) => {
               Scan to Download
             </h1>
           </div>
-          <div className="clock_ishraq">
+          <div className="clock_ishraq ">
             <Clock
               namazData={data.prayerTimes[0].timings}
               lon={lon}
@@ -141,7 +141,7 @@ const PrayerTime: React.FC<PrayerTimeProps> = ({ data, setProgress }) => {
             />
             <div className="israq">
               <div className="ishraq-icon">
-                <img src={ishraqicon} alt="Fajr" />
+                <img src={ishraqicon} alt="ishraq" className="h-8" />
               </div>
               <h1 className="text-2xl  font-bold">
                 Ishraq :{" "}
@@ -201,15 +201,16 @@ const PrayerTime: React.FC<PrayerTimeProps> = ({ data, setProgress }) => {
                       <img
                         src={getPrayerImage(prayer.namazName.toLowerCase())}
                         alt={prayer.namazName}
+                        className="h-8"
                       />
                       <b>{prayer.namazName}</b>
                     </div>
 
-                    <span className="time-slot text-xl xxl:text-4xl">
+                    <span className="time-slot">
                       {convertEpochToTimeString(prayer.azaanTime, lat, lon)}
                     </span>
 
-                    <span className="time-slot text-xl xxl:text-4xl">
+                    <span className="time-slot">
                       {convertEpochToTimeString(prayer.jamaatTime, lat, lon)}
                     </span>
                   </td>
