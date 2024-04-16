@@ -11,7 +11,7 @@ import isha from "../../assets/photos/isha.svg";
 import azaan from "../../assets/photos/azaan.svg";
 import iqama from "../../assets/photos/iqama.svg";
 import ishraqicon from "../../assets/photos/ishraq.svg";
-
+import { ClipLoader } from "react-spinners";
 import { getToken, onMessage } from "firebase/messaging";
 import {
   convertEpochToTimeString,
@@ -22,11 +22,6 @@ import {
   requestNotificationPermission,
 } from "../../firebase/firebaseInit";
 import Clock from "./Clock/Clock";
-import {
-  fetchHijriDate,
-  fetchJummahTimes,
-  fetchPrayerTimes,
-} from "../../api-calls";
 
 interface PrayerTime {
   namazName: string;
@@ -36,92 +31,26 @@ interface PrayerTime {
   _id: string;
 }
 
-const PrayerTime: React.FC = () => {
-  const [prayerTimes, setPrayerTimes] = useState<PrayerTime[]>([]);
-  const [otherTimings, setOtherTimings] = useState<PrayerTime[]>([]);
+interface PrayerTimeProps {
+  setProgress: React.Dispatch<React.SetStateAction<number>>;
+  data: any;
+}
+
+const PrayerTime: React.FC<PrayerTimeProps> = ({ data, setProgress }) => {
   const [ishraqTime, setIshraqTime] = useState<number>();
   const [hijiriDate, setHijjiriDate] = useState("");
-
-  const lat = 22.465084026777593;
-  const lon = 88.30494547779026;
-
-  useEffect(() => {
-    navigator.serviceWorker
-      .register("firebase-messaging-sw.js")
-      .then((registration) => {
-        return getToken(messaging, {
-          serviceWorkerRegistration: registration,
-        });
-      })
-      .then((currentToken) => {
-        console.log("Current token:", currentToken);
-      })
-      .catch((error) => {
-        console.error("Error registering service worker:", error);
-      });
-
-    // Define an async function inside the useEffect for handling messages
-    const handleMessage = async (payload) => {
-      console.log("Message received:", payload);
-      try {
-        await fetchPrayerTimes();
-        await fetchJummahTimes();
-      } catch (error) {
-        console.error("Error fetching data on message:", error);
-      }
-    };
-
-    // Listen for messages
-    onMessage(messaging, handleMessage);
-
-    // Example for handling 'FETCH_LATEST_DATA' messages from service workers
-    const handleServiceWorkerMessage = async (event) => {
-      if (event.data && event.data.type === "FETCH_LATEST_DATA") {
-        try {
-          console.log(
-            "Fetching latest data as requested by the service worker..."
-          );
-          await fetchPrayerTimes();
-          await fetchJummahTimes();
-        } catch (error) {
-          console.error(
-            "Error fetching data on service worker message:",
-            error
-          );
-        }
-      }
-    };
-
-    if ("serviceWorker" in navigator && "PushManager" in window) {
-      navigator.serviceWorker.ready.then((registration) => {
-        registration.addEventListener("message", handleServiceWorkerMessage);
-      });
-    }
-
-    // Request notification permission
-    requestNotificationPermission();
-
-    return () => {
-      if ("serviceWorker" in navigator && navigator.serviceWorker.controller) {
-        navigator.serviceWorker.controller.removeEventListener(
-          "message",
-          handleServiceWorkerMessage
-        );
-      }
-    };
-  }, []);
+  const [loadingPrayerTimes, setLoadingPrayerTimes] = useState(true);
+  const masjidName = data.masjidName;
+  const lon = data.coordinates[0];
+  const lat = data.coordinates[1];
 
   useEffect(() => {
     const loadData = async () => {
       try {
-        // These calls are correctly awaited.
-        const prayerTimesData = await fetchPrayerTimes();
-        setPrayerTimes(prayerTimesData);
-        const jummahTimesData = await fetchJummahTimes();
-        setOtherTimings(jummahTimesData);
-        const today = new Date();
-        const hijriDateData = await fetchHijriDate(formatDate(today));
-        setHijjiriDate(hijriDateData);
+        setProgress(0);
+        setLoadingPrayerTimes(true);
+        setProgress(30);
+        setLoadingPrayerTimes(false);
 
         const latitude = Number(lat);
         const longitude = Number(lon);
@@ -129,8 +58,10 @@ const PrayerTime: React.FC = () => {
         const sunriseUnix = sunrise.getTime() / 1000;
         let ishraqTimeCalc = sunriseUnix ? sunriseUnix + 15 * 60 : undefined;
         setIshraqTime(ishraqTimeCalc);
+        setProgress(100);
       } catch (error) {
         console.error("Failed to load data:", error);
+        setLoadingPrayerTimes(false);
       }
     };
 
@@ -183,19 +114,18 @@ const PrayerTime: React.FC = () => {
     fetchHijriDate();
   }, []);
 
-  console.log(prayerTimes);
   return (
-    <div className="App">
+    <div className="App w-screen h-screen overflow-hidden">
       <header>
         <div className="header">
           <img src={cmlogo} alt="" />
-          <h1 className="text-3xl  font-bold">Test Masjid</h1>
+          <h1 className="text-3xl  font-bold">{masjidName}</h1>
         </div>
       </header>
       <section className="clock mid-container">
         <div className="clock__container flex-container">
           <div className="appscanner">
-            <img src={OR} alt="" className="qr-scanner" />
+            <img src={OR} alt="" className="qr-scannermin-h-[650px]:mb-5" />
             <h1
               className="text-2xl md:text-1xl  font-bold text-center scantext"
               style={{ fontSize: "1.8vw" }}
@@ -203,11 +133,15 @@ const PrayerTime: React.FC = () => {
               Scan to Download
             </h1>
           </div>
-          <div className="clock_ishraq">
-            <Clock namazData={prayerTimes} />
+          <div className="clock_ishraq ">
+            <Clock
+              namazData={data.prayerTimes[0].timings}
+              lon={lon}
+              lat={lat}
+            />
             <div className="israq">
               <div className="ishraq-icon">
-                <img src={ishraqicon} alt="Fajr" />
+                <img src={ishraqicon} alt="ishraq" className="h-8" />
               </div>
               <h1 className="text-2xl  font-bold">
                 Ishraq :{" "}
@@ -218,9 +152,9 @@ const PrayerTime: React.FC = () => {
             </div>
           </div>
           <div className="othertimings">
-            {otherTimings.map((timings, i) => (
+            {data.specialTiming.map((timings, i) => (
               <div className="jummatime" key={i}>
-                <h1>{timings.namazName}</h1>
+                <h1 className="text-2xl font-bold">{timings.name}</h1>
                 <div className="aitimings">
                   <span>
                     <img src={azaan} alt="" />
@@ -241,37 +175,50 @@ const PrayerTime: React.FC = () => {
         </div>
       </section>
       <section className="prayer-times-container">
-        <table className="prayer-times">
-          <thead>
-            <tr>
-              <th colSpan={6}>{hijiriDate}</th>
-            </tr>
-          </thead>
+        {loadingPrayerTimes ? (
+          <div className="flex flex-col items-center justify-center h-[35vh]">
+            Loading...
+            <ClipLoader color="#36d7b7" />
+          </div>
+        ) : (
+          <table className="prayer-times h-full">
+            <thead>
+              <tr>
+                <th
+                  colSpan={6}
+                  className="text-2xl xxl:text-4xl xxl:leading-[6rem]"
+                >
+                  {hijiriDate}
+                </th>
+              </tr>
+            </thead>
 
-          <tbody>
-            <tr>
-              {prayerTimes.map((prayer, index) => (
-                <td key={index}>
-                  <div className="prayer-name">
-                    <img
-                      src={getPrayerImage(prayer.namazName.toLowerCase())}
-                      alt={prayer.namazName}
-                    />
-                    <b>{prayer.namazName}</b>
-                  </div>
+            <tbody>
+              <tr>
+                {data.prayerTimes[0].timings.map((prayer, index) => (
+                  <td key={index} className="xxl:leading-[6rem]">
+                    <div className="prayer-name text-2xl xxl:text-4xl ">
+                      <img
+                        src={getPrayerImage(prayer.namazName.toLowerCase())}
+                        alt={prayer.namazName}
+                        className="h-8"
+                      />
+                      <b>{prayer.namazName}</b>
+                    </div>
 
-                  <span className="time-slot">
-                    {convertEpochToTimeString(prayer.azaanTime, lat, lon)}
-                  </span>
+                    <span className="time-slot">
+                      {convertEpochToTimeString(prayer.azaanTime, lat, lon)}
+                    </span>
 
-                  <span className="time-slot">
-                    {convertEpochToTimeString(prayer.jamaatTime, lat, lon)}
-                  </span>
-                </td>
-              ))}
-            </tr>
-          </tbody>
-        </table>
+                    <span className="time-slot">
+                      {convertEpochToTimeString(prayer.jamaatTime, lat, lon)}
+                    </span>
+                  </td>
+                ))}
+              </tr>
+            </tbody>
+          </table>
+        )}
       </section>
     </div>
   );

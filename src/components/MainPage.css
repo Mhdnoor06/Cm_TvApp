@@ -1,0 +1,6 @@
+.bg-image {
+  background-image: url("../assets/photos/mainBG.svg");
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-size: cover;
+}
