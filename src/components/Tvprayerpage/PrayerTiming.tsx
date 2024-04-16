@@ -257,7 +257,7 @@ const PrayerTime: React.FC = () => {
             <tr>
               {prayerTimes.map((prayer, index) => (
                 <td key={index} className="xxl:leading-[6rem]">
-                  <div className="prayer-name text-2xl xxl:text-4xl ">
+                  <div className="prayer-name text-2xl xxl:text-4xl">
                     <img
                       src={getPrayerImage(prayer.namazName.toLowerCase())}
                       alt={prayer.namazName}
@@ -266,11 +266,11 @@ const PrayerTime: React.FC = () => {
                     <b>{prayer.namazName}</b>
                   </div>
 
-                  <span className="time-slot text-xl xxl:text-4xl">
+                  <span className="time-slot ">
                     {convertEpochToTimeString(prayer.azaanTime, lat, lon)}
                   </span>
 
-                  <span className="time-slot text-xl xxl:text-4xl">
+                  <span className="time-slot">
                     {convertEpochToTimeString(prayer.jamaatTime, lat, lon)}
                   </span>
                 </td>

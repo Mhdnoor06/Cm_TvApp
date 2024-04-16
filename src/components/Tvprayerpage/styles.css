@@ -179,7 +179,7 @@ header {
 .prayer-times .time-slot {
   font-weight: 500;
   color: #154f30;
-  /* font-size: 1.5em; */
+  font-size: 1rem;
   margin: 0 10px;
 }
 .prayer-times img {
@@ -460,5 +460,9 @@ a {
 
   .clock_ishraq {
     gap: 20px;
+  }
+
+  .prayer-times .time-slot {
+    font-size: 1.5rem;
   }
 }
