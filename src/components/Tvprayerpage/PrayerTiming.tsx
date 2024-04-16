@@ -189,7 +189,7 @@ const PrayerTime: React.FC = () => {
       <header>
         <div className="header">
           <img src={cmlogo} alt="" />
-          <h1 className="text-3xl  font-bold">Test Masjid</h1>
+          <h1 className="text-3xl  font-bold">Islamic Center of Quad Cities</h1>
         </div>
       </header>
       <section className="clock mid-container">
