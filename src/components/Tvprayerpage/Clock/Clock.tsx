@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import hrhandle from "../../../assets/photos/hrhandle.png";
 import minhandle from "../../../assets/photos/minhandle.png";
+import { convertEpochToTimeString } from "../../../healpers/helperfunc";
 // import moment from "moment-timezone";
 
 interface NamazData {
@@ -30,6 +31,9 @@ const Clock: React.FC<NamazComponentProps> = ({ namazData }) => {
     timeRemaining: "",
   });
 
+  const currentNamaz = currentPrayer.namazName;
+  const lat = 22.465084026777593;
+  const lon = 88.30494547779026;
   // console.log(currentPrayer);
 
   useEffect(() => {
@@ -134,6 +138,11 @@ const Clock: React.FC<NamazComponentProps> = ({ namazData }) => {
     }
   }, [namazData, updatePrayerTimers]);
 
+  function getAzaanTime(namazName) {
+    const namaz = namazData.find((item) => item.namazName === namazName);
+    return namaz ? namaz.azaanTime : null;
+  }
+
   return (
     <div>
       <div className="clock__content flex-container">
@@ -167,9 +176,11 @@ const Clock: React.FC<NamazComponentProps> = ({ namazData }) => {
 
         <div>
           <div className="clock_right">
-            <h1 id="next-prayer-name">Maghrib</h1>
+            <h1 id="next-prayer-name">{currentPrayer.namazName}</h1>
             <div id="next-prayer">
-              <h1 id="next-prayer-time">{`${time.hoursText}:${time.minutesText} ${time.ampm}`}</h1>
+              <h1 id="next-prayer-time">
+                {convertEpochToTimeString(getAzaanTime(currentNamaz), lat, lon)}
+              </h1>
             </div>
           </div>
         </div>

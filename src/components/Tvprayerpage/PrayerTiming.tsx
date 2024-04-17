@@ -41,6 +41,7 @@ const PrayerTime: React.FC = () => {
   const [otherTimings, setOtherTimings] = useState<PrayerTime[]>([]);
   const [ishraqTime, setIshraqTime] = useState<number>();
   const [hijiriDate, setHijjiriDate] = useState("");
+  const [loaderTxt, setLoaderTxt] = useState("");
 
   const lat = 22.465084026777593;
   const lon = 88.30494547779026;
@@ -115,8 +116,12 @@ const PrayerTime: React.FC = () => {
     const loadData = async () => {
       try {
         // These calls are correctly awaited.
+        setLoaderTxt("Loading...");
         const prayerTimesData = await fetchPrayerTimes();
         setPrayerTimes(prayerTimesData);
+        prayerTimes.length < 0
+          ? setLoaderTxt("Prayer timings are not updated")
+          : null;
         const jummahTimesData = await fetchJummahTimes();
         setOtherTimings(jummahTimesData);
         const today = new Date();
@@ -278,9 +283,7 @@ const PrayerTime: React.FC = () => {
                   </td>
                 ))
               ) : (
-                <b className="text-xl m-auto h-full">
-                  Prayer timings are not updated
-                </b>
+                <b className="text-xl m-auto h-full">{loaderTxt}</b>
               )}
             </tr>
           </tbody>
