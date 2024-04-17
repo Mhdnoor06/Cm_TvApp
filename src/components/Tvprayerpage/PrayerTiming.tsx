@@ -125,7 +125,7 @@ const PrayerTime: React.FC<PrayerTimeProps> = ({ data, setProgress }) => {
       <section className="clock mid-container">
         <div className="clock__container flex-container">
           <div className="appscanner">
-            <img src={OR} alt="" className="qr-scannermin-h-[650px]:mb-5" />
+            <img src={OR} alt="" className="qr-scanner min-h-[650px]:mb-5" />
             <h1
               className="text-2xl md:text-1xl  font-bold text-center scantext"
               style={{ fontSize: "1.8vw" }}
