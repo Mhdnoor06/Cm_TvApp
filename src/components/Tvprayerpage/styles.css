@@ -180,8 +180,9 @@ header {
   font-weight: 500;
   color: #154f30;
   font-size: 1rem;
-  margin: 0 10px;
+  margin: 0 5px;
 }
+
 .prayer-times img {
   margin-bottom: 4px;
 }
@@ -464,5 +465,6 @@ a {
 
   .prayer-times .time-slot {
     font-size: 1.5rem;
+    margin: 0 10px;
   }
 }
