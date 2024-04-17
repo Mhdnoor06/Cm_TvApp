@@ -80,7 +80,7 @@ function App() {
         if (response.prayerTimes && response.prayerTimes.length > 0) {
           setData(response);
           setRedirectPath("/prayer");
-        } else if (response.events && response.events.length > 0) {
+        } else if (response.events && response.events.length >= 0) {
           setData(response);
           console.log(response);
           setRedirectPath("/event");
