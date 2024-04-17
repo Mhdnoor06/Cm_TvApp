@@ -218,25 +218,26 @@ const PrayerTime: React.FC = () => {
             </div>
           </div>
           <div className="othertimings">
-            {otherTimings.map((timings, i) => (
-              <div className="jummatime" key={i}>
-                <h1 className="text-2xl font-bold">{timings.namazName}</h1>
-                <div className="aitimings">
-                  <span>
-                    <img src={azaan} alt="" />
-                    <p>
-                      {convertEpochToTimeString(timings.azaanTime, lat, lon)}
-                    </p>
-                  </span>
-                  <span>
-                    <img src={iqama} alt="" />
-                    <p>
-                      {convertEpochToTimeString(timings.jamaatTime, lat, lon)}
-                    </p>
-                  </span>
+            {otherTimings.length > 0 &&
+              otherTimings.map((timings, i) => (
+                <div className="jummatime" key={i}>
+                  <h1 className="text-2xl font-bold">{timings.namazName}</h1>
+                  <div className="aitimings">
+                    <span>
+                      <img src={azaan} alt="" />
+                      <p>
+                        {convertEpochToTimeString(timings.azaanTime, lat, lon)}
+                      </p>
+                    </span>
+                    <span>
+                      <img src={iqama} alt="" />
+                      <p>
+                        {convertEpochToTimeString(timings.jamaatTime, lat, lon)}
+                      </p>
+                    </span>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
           </div>
         </div>
       </section>
@@ -255,26 +256,32 @@ const PrayerTime: React.FC = () => {
 
           <tbody>
             <tr>
-              {prayerTimes.map((prayer, index) => (
-                <td key={index} className="xxl:leading-[6rem]">
-                  <div className="prayer-name text-2xl xxl:text-4xl">
-                    <img
-                      src={getPrayerImage(prayer.namazName.toLowerCase())}
-                      alt={prayer.namazName}
-                      className="h-8"
-                    />
-                    <b>{prayer.namazName}</b>
-                  </div>
+              {prayerTimes.length > 0 ? (
+                prayerTimes.map((prayer, index) => (
+                  <td key={index} className="xxl:leading-[6rem]">
+                    <div className="prayer-name text-2xl xxl:text-4xl">
+                      <img
+                        src={getPrayerImage(prayer.namazName.toLowerCase())}
+                        alt={prayer.namazName}
+                        className="h-8"
+                      />
+                      <b>{prayer.namazName}</b>
+                    </div>
 
-                  <span className="time-slot ">
-                    {convertEpochToTimeString(prayer.azaanTime, lat, lon)}
-                  </span>
+                    <span className="time-slot ">
+                      {convertEpochToTimeString(prayer.azaanTime, lat, lon)}
+                    </span>
 
-                  <span className="time-slot">
-                    {convertEpochToTimeString(prayer.jamaatTime, lat, lon)}
-                  </span>
-                </td>
-              ))}
+                    <span className="time-slot">
+                      {convertEpochToTimeString(prayer.jamaatTime, lat, lon)}
+                    </span>
+                  </td>
+                ))
+              ) : (
+                <b className="text-xl m-auto h-full">
+                  Prayer timings are not updated
+                </b>
+              )}
             </tr>
           </tbody>
         </table>
