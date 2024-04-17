@@ -122,52 +122,62 @@ const Event: React.FC<{ data: any }> = ({ data }) => {
 
   return (
     <div className="bg-image">
-      <Swiper
-        onSwiper={(swiper) => (swiperRef.current = swiper)}
-        spaceBetween={10}
-        slidesPerView={1}
-        loop={data.events.length > 1}
-        autoplay={
-          data.events.length > 1
-            ? { delay: 3000, disableOnInteraction: false }
-            : false
-        }
-        pagination={{ clickable: true }}
-        onSlideChange={(swiper) => setActiveIndex(swiper.realIndex)}
-      >
-        {data.events.map((event, index) => (
-          <SwiperSlide key={index}>
-            <EventCard event={event} />
-          </SwiperSlide>
-        ))}
-      </Swiper>
+      {data.events && data.events.length > 0 ? (
+        <React.Fragment>
+          <Swiper
+            onSwiper={(swiper) => (swiperRef.current = swiper)}
+            spaceBetween={10}
+            slidesPerView={1}
+            loop={data.events.length > 1}
+            autoplay={
+              data.events.length > 1
+                ? { delay: 3000, disableOnInteraction: false }
+                : false
+            }
+            pagination={{ clickable: true }}
+            onSlideChange={(swiper) => setActiveIndex(swiper.realIndex)}
+          >
+            {data.events.map((event, index) => (
+              <SwiperSlide key={index}>
+                <EventCard event={event} />
+              </SwiperSlide>
+            ))}
+          </Swiper>
 
-      <Swiper
-        spaceBetween={10}
-        slidesPerView={5}
-        loop={data.events.length > 5}
-        autoplay={
-          data.events.length > 5
-            ? { delay: 3000, disableOnInteraction: false }
-            : false
-        }
-        onSwiper={(swiper) => (swiperRefThumbnail.current = swiper)}
-      >
-        {data.events.map((event, index) => (
-          <SwiperSlide key={index} className="h-40vh">
-            <div
-              className={`cursor-pointer m-3 rounded-xl ${
-                index === activeIndex ? "ring-4 ring-yellow-400 " : ""
-              }`}
-              onClick={() => {
-                swiperRef.current.slideToLoop(index);
-              }}
-            >
-              <ShortEventCard event={event} />
-            </div>
-          </SwiperSlide>
-        ))}
-      </Swiper>
+          <Swiper
+            spaceBetween={10}
+            slidesPerView={5}
+            loop={data.events.length > 5}
+            autoplay={
+              data.events.length > 5
+                ? { delay: 3000, disableOnInteraction: false }
+                : false
+            }
+            onSwiper={(swiper) => (swiperRefThumbnail.current = swiper)}
+          >
+            {data.events.map((event, index) => (
+              <SwiperSlide key={index} className="h-40vh">
+                <div
+                  className={`cursor-pointer m-3 rounded-xl ${
+                    index === activeIndex ? "ring-4 ring-yellow-400 " : ""
+                  }`}
+                  onClick={() => {
+                    swiperRef.current.slideToLoop(index);
+                  }}
+                >
+                  <ShortEventCard event={event} />
+                </div>
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        </React.Fragment>
+      ) : (
+        <div className="flex justify-center items-center h-screen">
+          <p className="text-3xl text-custom-green font-bold">
+            There are no upcoming events
+          </p>
+        </div>
+      )}
     </div>
   );
 };
