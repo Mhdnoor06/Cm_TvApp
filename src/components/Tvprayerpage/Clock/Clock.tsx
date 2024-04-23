@@ -176,15 +176,25 @@ const Clock: React.FC<NamazComponentProps> = ({ namazData, lat, lon }) => {
 
         <div>
           <div className="clock_right">
-            <h1 id="next-prayer-name">{currentPrayer.namazName}</h1>
-            <div id="next-prayer">
-              <h1 id="next-prayer-time">
-                {convertEpochToTimeString(getAzaanTime(currentNamaz), lat, lon)}
-                <b className="text-yellow-500 mx-3">
-                  ({`${currentPrayer.timeRemaining}`})
-                </b>
-              </h1>
-            </div>
+            {namazData.length > 0 ? (
+              <>
+                <h1 id="next-prayer-name">{currentPrayer.namazName}</h1>
+                <div id="next-prayer">
+                  <h1 id="next-prayer-time">
+                    {convertEpochToTimeString(
+                      getAzaanTime(currentNamaz),
+                      lat,
+                      lon
+                    )}
+                    <b className="text-yellow-500 mx-3">
+                      ({`${currentPrayer.timeRemaining}`})
+                    </b>
+                  </h1>
+                </div>
+              </>
+            ) : (
+              <h1 className=" text-3xl">Timings not updated</h1>
+            )}
           </div>
         </div>
       </div>

@@ -21,7 +21,6 @@ function App() {
   const [redirectPath, setRedirectPath] = useState<string | null>(null);
   const [registrationInitiated, setRegistrationInitiated] = useState(false);
 
-  console.log(data);
   useEffect(() => {
     if (token) {
       fetchData(token);
@@ -63,13 +62,28 @@ function App() {
 
   useEffect(() => {
     const fetchDataInterval = setInterval(() => {
-      if (token && redirectPath) {
+      if (token) {
         console.log("Fetch data every 15 minutes");
         fetchData(token);
       }
     }, 15 * 60 * 1000);
+
+    if (data && redirectPath) {
+      if (
+        (redirectPath === "/prayer" && !data.prayerTimes) ||
+        (redirectPath === "/event" && !data.events)
+      ) {
+        // If redirected path doesn't match current preference, update redirectPath
+        if (data.prayerTimes && data.prayerTimes.length > 0) {
+          setRedirectPath("/prayer");
+        } else if (data.events && data.events.length > 0) {
+          setRedirectPath("/event");
+        }
+      }
+    }
+
     return () => clearInterval(fetchDataInterval);
-  }, [token, redirectPath]);
+  }, [token, redirectPath, data]);
 
   const fetchData = async (token) => {
     try {
@@ -77,13 +91,12 @@ function App() {
       if (response && (response.prayerTimes || response.events)) {
         setLoading(false);
         console.log(response);
-        if (response.prayerTimes && response.prayerTimes.length > 0) {
-          setData(response);
+        if (response.prayerTimes && response.prayerTimes.length >= 0) {
           setRedirectPath("/prayer");
-        } else if (response.events && response.events.length >= 0) {
           setData(response);
-          console.log(response);
+        } else if (response.events && response.events.length >= 0) {
           setRedirectPath("/event");
+          setData(response);
         }
       } else {
         setTimeout(() => {
@@ -103,7 +116,6 @@ function App() {
       <LoadingBar color="#154F30" height={3} progress={progress} />
 
       <Router>
-        {/* Redirect based on the path */}
         {redirectPath && <Redirector redirectPath={redirectPath} />}
 
         <Routes>

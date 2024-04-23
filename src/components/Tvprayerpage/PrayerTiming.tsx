@@ -11,6 +11,7 @@ import isha from "../../assets/photos/isha.svg";
 import azaan from "../../assets/photos/azaan.svg";
 import iqama from "../../assets/photos/iqama.svg";
 import ishraqicon from "../../assets/photos/ishraq.svg";
+import notimings from "../../assets/photos/notimings.svg";
 import { ClipLoader } from "react-spinners";
 import { getToken, onMessage } from "firebase/messaging";
 import {
@@ -22,6 +23,7 @@ import {
   requestNotificationPermission,
 } from "../../firebase/firebaseInit";
 import Clock from "./Clock/Clock";
+import Redirector from "../../healpers/Redirector";
 
 interface PrayerTime {
   namazName: string;
@@ -114,6 +116,10 @@ const PrayerTime: React.FC<PrayerTimeProps> = ({ data, setProgress }) => {
     fetchHijriDate();
   }, []);
 
+  if (data && data.events && data.events) {
+    return <Redirector redirectPath="/event" />;
+  }
+
   return (
     <div className="App w-screen h-screen overflow-hidden">
       <header>
@@ -135,7 +141,9 @@ const PrayerTime: React.FC<PrayerTimeProps> = ({ data, setProgress }) => {
           </div>
           <div className="clock_ishraq ">
             <Clock
-              namazData={data.prayerTimes[0].timings}
+              namazData={
+                data.prayerTimes.length > 0 ? data.prayerTimes[0].timings : []
+              }
               lon={lon}
               lat={lat}
             />
@@ -195,26 +203,33 @@ const PrayerTime: React.FC<PrayerTimeProps> = ({ data, setProgress }) => {
 
             <tbody>
               <tr>
-                {data.prayerTimes[0].timings.map((prayer, index) => (
-                  <td key={index} className="xxl:leading-[6rem]">
-                    <div className="prayer-name text-2xl xxl:text-4xl ">
-                      <img
-                        src={getPrayerImage(prayer.namazName.toLowerCase())}
-                        alt={prayer.namazName}
-                        className="h-8"
-                      />
-                      <b>{prayer.namazName}</b>
-                    </div>
+                {data.prayerTimes.length > 0 ? (
+                  data.prayerTimes[0].timings.map((prayer, index) => (
+                    <td key={index} className="xxl:leading-[6rem]">
+                      <div className="prayer-name text-2xl xxl:text-4xl ">
+                        <img
+                          src={getPrayerImage(prayer.namazName.toLowerCase())}
+                          alt={prayer.namazName}
+                          className="h-8"
+                        />
+                        <b>{prayer.namazName}</b>
+                      </div>
 
-                    <span className="time-slot">
-                      {convertEpochToTimeString(prayer.azaanTime, lat, lon)}
-                    </span>
+                      <span className="time-slot">
+                        {convertEpochToTimeString(prayer.azaanTime, lat, lon)}
+                      </span>
 
-                    <span className="time-slot">
-                      {convertEpochToTimeString(prayer.jamaatTime, lat, lon)}
-                    </span>
+                      <span className="time-slot">
+                        {convertEpochToTimeString(prayer.jamaatTime, lat, lon)}
+                      </span>
+                    </td>
+                  ))
+                ) : (
+                  <td className="text-2xl h-full flex flex-col justify-center items-center">
+                    <img src={notimings} alt="" />
+                    Prayer timings are not updated
                   </td>
-                ))}
+                )}
               </tr>
             </tbody>
           </table>

@@ -4,6 +4,8 @@ import SwiperCore from "swiper";
 import calendericon from "../../assets/photos/calendericon.svg";
 import clockicon from "../../assets/photos/clockicon.svg";
 import ImagePreview from "../../assets/photos/masjidPreview.png";
+import noevents from "../../assets/photos/no events.svg";
+import logo from "../../assets/photos/cmlogo.svg";
 
 import {
   Navigation,
@@ -172,10 +174,16 @@ const Event: React.FC<{ data: any }> = ({ data }) => {
           </Swiper>
         </React.Fragment>
       ) : (
-        <div className="flex justify-center items-center h-screen">
-          <p className="text-3xl text-custom-green font-bold">
-            There are no upcoming events
-          </p>
+        <div className="flex flex-col gap-10 justify-center items-center h-screen">
+          <div className="absolute top-0 left-0 p-4">
+            <img src={logo} alt="Logo" />
+          </div>
+          <div className="flex flex-col gap-5 items-center">
+            <img src={noevents} alt="No Events" />
+            <p className="text-3xl text-custom-green font-bold text-center">
+              No Upcoming Events
+            </p>
+          </div>
         </div>
       )}
     </div>
