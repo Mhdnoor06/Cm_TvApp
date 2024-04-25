@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import hrhandle from "../../../assets/photos/hrhandle.png";
 import minhandle from "../../../assets/photos/minhandle.png";
 import { convertEpochToTimeString } from "../../../healpers/helperfunc";
@@ -36,33 +42,38 @@ const Clock: React.FC<NamazComponentProps> = ({ namazData }) => {
   const lon = 88.30494547779026;
   // console.log(currentPrayer);
 
+  const sortedPrayers = useMemo(() => {
+    return namazData.slice().sort((a, b) => a.azaanTime - b.azaanTime);
+  }, [namazData]);
+
+  const hourHandRef = useRef<HTMLDivElement>(null);
+  const minuteHandRef = useRef<HTMLDivElement>(null);
+  const secondHandRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
-    const clockInterval = setInterval(() => {
-      const date = new Date();
+    const updateClock = () => {
+      const now = new Date();
+      const seconds = now.getSeconds();
+      const minutes = now.getMinutes();
+      const hours = now.getHours();
 
-      const hours = date.getHours();
-      const minutes = date.getMinutes();
-      const seconds = date.getSeconds();
+      const secondsAngle = (seconds / 60) * 360;
+      const minutesAngle = (minutes / 60) * 360 + (seconds / 60) * 6;
+      const hoursAngle = ((hours % 12) / 12) * 360 + (minutes / 60) * 30;
 
-      const hoursAngle = (hours % 12) * 30 + minutes * 0.5; // Each hour = 30 degrees, minutes adjustment
-      const minutesAngle = minutes * 6; // Each minute = 6 degrees
-      const secondsAngle = seconds * 6; // Each second = 6 degrees
+      if (secondHandRef.current) {
+        secondHandRef.current.style.transform = `rotate(${secondsAngle}deg)`;
+      }
+      if (minuteHandRef.current) {
+        minuteHandRef.current.style.transform = `rotate(${minutesAngle}deg)`;
+      }
+      if (hourHandRef.current) {
+        hourHandRef.current.style.transform = `rotate(${hoursAngle}deg)`;
+      }
 
-      const hoursFormatted = `${hours % 12 || 12}`.padStart(2, "0");
-      const minutesFormatted = `${minutes}`.padStart(2, "0");
-      const ampm = hours >= 12 ? "PM" : "AM";
-
-      setTime({
-        hoursAngle,
-        minutesAngle,
-        secondsAngle,
-        hoursText: hoursFormatted,
-        minutesText: minutesFormatted,
-        ampm,
-      });
-    }, 1000);
-
-    return () => clearInterval(clockInterval);
+      requestAnimationFrame(updateClock);
+    };
+    requestAnimationFrame(updateClock);
   }, []);
 
   // console.log(currentPrayer);
@@ -149,18 +160,21 @@ const Clock: React.FC<NamazComponentProps> = ({ namazData }) => {
         <div className="clock__circle">
           <div className="clock__rounder"></div>
           <div
+            ref={hourHandRef}
             className="clock__hour"
             style={{ transform: `rotateZ(${time.hoursAngle}deg)` }}
           >
             <img src={hrhandle} alt="Hour Hand" style={{ height: "60px" }} />
           </div>
           <div
+            ref={minuteHandRef}
             className="clock__minutes"
             style={{ transform: `rotateZ(${time.minutesAngle}deg)` }}
           >
             <img src={minhandle} alt="Minute Hand" style={{ height: "70px" }} />
           </div>
           <div
+            ref={secondHandRef}
             className="clock__seconds"
             style={{ transform: `rotateZ(${time.secondsAngle}deg)` }}
           ></div>
