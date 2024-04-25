@@ -6,7 +6,6 @@ const BEARER_TOKEN =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhc3NldFR5cGUiOiJ0aW1ldGFibGUiLCJtYXNqaWRJZCI6IjY1ZmUwNDRhOGIyMmEwYTM2ZGQxMjRiZCIsInVzZXJJZCI6IjY1NjYzYjg3ODlhNmQ2Y2UzMGU5MDFmMyIsImlhdCI6MTcxMjE1MjYxN30.IHJBcngfC_cEtVbPVxDH4fD8hkfAoAtTyYr4LQr0AWQ";
 
 export const fetchPrayerTimes = async () => {
-  console.log("called");
   const url = `${API_BASE_URL}widget/prayer-timetable`;
   try {
     const response = await axios.get(url, {

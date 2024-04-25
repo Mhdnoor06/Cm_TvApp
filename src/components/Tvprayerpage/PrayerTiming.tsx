@@ -12,15 +12,11 @@ import azaan from "../../assets/photos/azaan.svg";
 import iqama from "../../assets/photos/iqama.svg";
 import ishraqicon from "../../assets/photos/ishraq.svg";
 
-import { getToken, onMessage } from "firebase/messaging";
 import {
   convertEpochToTimeString,
   formatDate,
 } from "../../healpers/helperfunc";
-import {
-  messaging,
-  requestNotificationPermission,
-} from "../../firebase/firebaseInit";
+
 import Clock from "./Clock/Clock";
 import {
   fetchHijriDate,
@@ -45,72 +41,6 @@ const PrayerTime: React.FC = () => {
 
   const lat = 22.465084026777593;
   const lon = 88.30494547779026;
-
-  useEffect(() => {
-    navigator.serviceWorker
-      .register("firebase-messaging-sw.js")
-      .then((registration) => {
-        return getToken(messaging, {
-          serviceWorkerRegistration: registration,
-        });
-      })
-      .then((currentToken) => {
-        console.log("Current token:", currentToken);
-      })
-      .catch((error) => {
-        console.error("Error registering service worker:", error);
-      });
-
-    // Define an async function inside the useEffect for handling messages
-    const handleMessage = async (payload) => {
-      console.log("Message received:", payload);
-      try {
-        await fetchPrayerTimes();
-        await fetchJummahTimes();
-      } catch (error) {
-        console.error("Error fetching data on message:", error);
-      }
-    };
-
-    // Listen for messages
-    onMessage(messaging, handleMessage);
-
-    // Example for handling 'FETCH_LATEST_DATA' messages from service workers
-    const handleServiceWorkerMessage = async (event) => {
-      if (event.data && event.data.type === "FETCH_LATEST_DATA") {
-        try {
-          console.log(
-            "Fetching latest data as requested by the service worker..."
-          );
-          await fetchPrayerTimes();
-          await fetchJummahTimes();
-        } catch (error) {
-          console.error(
-            "Error fetching data on service worker message:",
-            error
-          );
-        }
-      }
-    };
-
-    if ("serviceWorker" in navigator && "PushManager" in window) {
-      navigator.serviceWorker.ready.then((registration) => {
-        registration.addEventListener("message", handleServiceWorkerMessage);
-      });
-    }
-
-    // Request notification permission
-    requestNotificationPermission();
-
-    return () => {
-      if ("serviceWorker" in navigator && navigator.serviceWorker.controller) {
-        navigator.serviceWorker.controller.removeEventListener(
-          "message",
-          handleServiceWorkerMessage
-        );
-      }
-    };
-  }, []);
 
   useEffect(() => {
     const loadData = async () => {
@@ -188,7 +118,6 @@ const PrayerTime: React.FC = () => {
     fetchHijriDate();
   }, []);
 
-  console.log(prayerTimes);
   return (
     <div className="App w-screen h-screen overflow-hidden">
       <header>
@@ -283,7 +212,7 @@ const PrayerTime: React.FC = () => {
                   </td>
                 ))
               ) : (
-                <b className="text-xl m-auto h-full">{loaderTxt}</b>
+                <td className="text-xl m-auto h-full">{loaderTxt}</td>
               )}
             </tr>
           </tbody>
